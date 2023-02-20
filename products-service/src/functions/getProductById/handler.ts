@@ -1,7 +1,6 @@
 import { errorResponse, ValidatedEventAPIGatewayProxyEvent } from '@libs/api-gateway';
 import { successResponse } from '@libs/api-gateway';
 import { middyfy } from '@libs/lambda';
-import { ResponseError } from '@libs/requestError';
 import { productList } from '@model/data-product-list';
 import { Product } from '@model/index';
 
@@ -9,20 +8,21 @@ import schema from './schema';
 
 const getProductById: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (event) => {
   try {
-    const { productId } = event.queryStringParameters;
+    if (!event.pathParameters || !event.pathParameters.productId) {
+      return errorResponse({ statusCode: 400, message: 'missing productId in the path' });
+    }
+
+    const { productId } = event.pathParameters;
     const product = productList.find((product) => product.id === productId);
 
     if (!product) {
-      throw new ResponseError({message: 'Item not founded', statusCode: 403});
+      return errorResponse({ statusCode: 403, message: `Product with id:${productId} not founded` });
     }
 
     return successResponse<Product>(product);
-
-  } catch(err) {
+  } catch (err) {
     return errorResponse(err);
   }
-
-  
 };
 
 export const main = middyfy(getProductById);
