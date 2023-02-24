@@ -6,7 +6,7 @@ import getProductById from '@functions/getProductById';
 const serverlessConfiguration: AWS = {
   service: 'products-service',
   frameworkVersion: '3',
-  plugins: ['serverless-esbuild', 'serverless-webpack'],
+  plugins: ['serverless-webpack'],
   provider: {
     name: 'aws',
     runtime: 'nodejs14.x',
@@ -24,15 +24,8 @@ const serverlessConfiguration: AWS = {
   functions: { getProductsList, getProductById },
   package: { individually: true },
   custom: {
-    esbuild: {
-      bundle: true,
-      minify: false,
-      sourcemap: true,
-      exclude: ['aws-sdk'],
-      target: 'node14',
-      define: { 'require.resolve': undefined },
-      platform: 'node',
-      concurrency: 10,
+    webpack: {
+      excludeFiles: ['**/*.spec.ts'],
     },
   },
 };

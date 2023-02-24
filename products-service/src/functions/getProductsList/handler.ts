@@ -6,7 +6,7 @@ import { Product } from '@model/index';
 
 import schema from './schema';
 
-const getProductsList: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async () => {
+export const getProductsList: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async () => {
   return successResponse<Product[]>(productList);
 };
 

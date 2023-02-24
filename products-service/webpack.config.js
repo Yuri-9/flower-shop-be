@@ -16,6 +16,11 @@ module.exports = {
       }),
     ],
   },
+  devtool: 'source-map',
+  stats: 'minimal',
+  optimization: {
+    minimize: false
+  },
   module: {
     rules: [
       {
@@ -27,9 +32,15 @@ module.exports = {
             path.resolve(__dirname, '.serverless'),
             path.resolve(__dirname, '.webpack'),
             path.resolve(__dirname, '.esbuild'),
-          ],
+          ],         
         ],
       },
     ],
+  },
+  output: {
+    libraryTarget: 'commonjs2',
+    path: path.join(__dirname, '.webpack'),
+    filename: '[name].js',
+    sourceMapFilename: '[file].map',
   },
 };
