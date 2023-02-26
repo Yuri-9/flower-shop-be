@@ -1,5 +1,5 @@
 import { getProductsList } from "./handler";
-import {productList} from '@model/data-product-list';
+import { productList } from '@model/data-product-list';
 import { defaultHeaders } from "@libs/api-gateway";
 import { Context } from "aws-lambda";
 

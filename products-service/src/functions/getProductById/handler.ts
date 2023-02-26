@@ -9,7 +9,7 @@ import schema from './schema';
 export const getProductById: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (event) => {
   try {
     if (!event.pathParameters || !event.pathParameters.productId) {
-      return errorResponse({ statusCode: 400, message: 'missing productId in the path' });
+      return errorResponse({ statusCode: 400, message: 'Missing productId in the path' });
     }
 
     const { productId } = event.pathParameters;
