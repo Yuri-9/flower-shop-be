@@ -1,13 +1,13 @@
-import { getProductById } from "./handler";
+import { getProductById } from './handler';
 import { productList } from '@model/data-product-list';
-import { defaultHeaders } from "@libs/api-gateway";
-import { Context } from "aws-lambda";
+import { Context } from 'aws-lambda';
+import { defaultHeaders } from '@libs/api-gateway';
 
-const getMockEvent = (pathParameters) => {
- return ({
-    pathParameters,
-    httpMethod: "GET",
-    path: "products",
+const getMockEvent = (productId) => {
+  return {
+    pathParameters: { productId },
+    httpMethod: 'GET',
+    path: 'products',
     headers: undefined,
     multiValueHeaders: undefined,
     isBase64Encoded: false,
@@ -15,31 +15,43 @@ const getMockEvent = (pathParameters) => {
     multiValueQueryStringParameters: undefined,
     stageVariables: undefined,
     requestContext: undefined,
-    resource: "",
-    body: undefined
-  }) 
+    resource: '',
+    body: undefined,
+  };
 };
 
+describe('getProductById', () => {
+  let event;
+  let product;
+  let response;
 
-describe("getProductById", () => {
-  test("should return a current product from list of products", async () => {
-    const res = await getProductById(getMockEvent({ productId: "3bbeb93f-5c38-40b1-8c74-a5461efb7e23" }),  {} as Context, jest.fn());
-    expect(res).toEqual({
-      statusCode: 200,
-      headers: {
-        ...defaultHeaders,
-      },
-      body: JSON.stringify(productList[0]),
-    });
+  beforeEach(async () => {
+    event = getMockEvent(productList[Math.floor(Math.random() * productList.length)].id);
+
+    response = await getProductById(event, {} as Context, jest.fn());
+    product = JSON.parse(response.body);
   });
-  test("should return a current product from list of products", async () => {
-    const res = await getProductById(getMockEvent({ productId: "3" }),  {} as Context, jest.fn());
-    expect(res).toEqual({
+
+  test('should return a current product from list of products', async () => {
+    expect(product.id).toEqual(event.pathParameters.productId);
+  });
+
+  test('should be return single object', async () => {
+    expect(product).not.toBeInstanceOf(Array);
+    expect(product).toBeInstanceOf(Object);
+  });
+
+  test('should return a status code 403 and error message', async () => {
+    const badUUID = 'badId';
+    const event = getMockEvent(badUUID);
+    const response = await getProductById(event, {} as Context, jest.fn());
+
+    expect(response).toEqual({
       statusCode: 403,
       headers: {
         ...defaultHeaders,
       },
-      body: JSON.stringify( {message: `Product with id:${3} not founded`}),
+      body: JSON.stringify({ message: `Product with id:${badUUID} not founded` }),
     });
   });
 });
