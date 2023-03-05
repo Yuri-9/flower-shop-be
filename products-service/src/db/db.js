@@ -13,12 +13,8 @@ export const getQueryParams = (TableName, felidName, value) => ({
 export const getPutParams = (TableName, Item) => ({ TableName, Item });
 
 const scan = async (params) => {
-  try {
-    const data = await dynamo.scan(params).promise();
-    return data;
-  } catch (err) {
-    return err;
-  }
+  const data = await dynamo.scan(params).promise();
+  return data;
 };
 
 const query = async (params) => {

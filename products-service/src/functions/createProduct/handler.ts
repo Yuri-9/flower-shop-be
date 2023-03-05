@@ -8,6 +8,7 @@ const { TABLE_NAME_PRODUCT, TABLE_NAME_STOCK } = process.env;
 
 export const createProduct: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (event) => {
   try {
+    console.log('event', event);
     if (!event.body) {
       return errorResponse({ statusCode: 400, message: 'Missing body' });
     }
@@ -23,8 +24,7 @@ export const createProduct: ValidatedEventAPIGatewayProxyEvent<typeof schema> = 
     ) {
       return errorResponse({
         statusCode: 403,
-        message:
-          'Missing some property  (id: string,  title: string, description: string, price: number, count: number)',
+        message: 'Missing some property (id: string, title: string, description: string, price: number, count: number)',
       });
     }
 
