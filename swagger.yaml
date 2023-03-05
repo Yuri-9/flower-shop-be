@@ -1,0 +1,21 @@
+openapi: 3.0.0
+info:
+    title: API Specification for Flower-shop
+    description: API Specification for Flower-shop. CloudX AWS Practitioner for JS 4
+    version: 0.0.1
+servers:
+    - url: https://m5lllv4o01.execute-api.eu-west-1.amazonaws.com/dev
+      description: Product server
+paths:
+    /products:
+        get:
+            summary: Returns a list of products.
+            responses:
+                200:
+                    description: An array of user products
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    type: string
