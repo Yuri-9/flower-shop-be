@@ -1,5 +1,8 @@
 import type { AWS } from '@serverless/typescript';
 
+import * as dotenv from 'dotenv';
+dotenv.config({ path: __dirname + '/.env' });
+
 import getProductsList from '@functions/getProductsList';
 import getProductById from '@functions/getProductById';
 import createProduct from '@functions/createProduct';
@@ -9,6 +12,7 @@ const serverlessConfiguration: AWS = {
   frameworkVersion: '3',
   plugins: ['serverless-esbuild', 'serverless-offline'],
   // plugins: ['serverless-webpack', 'serverless-offline'],
+  useDotenv: true,
   provider: {
     name: 'aws',
     runtime: 'nodejs14.x',

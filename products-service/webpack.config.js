@@ -19,7 +19,7 @@ module.exports = {
   devtool: 'source-map',
   stats: 'minimal',
   optimization: {
-    minimize: false
+    minimize: false,
   },
   module: {
     rules: [
@@ -32,7 +32,7 @@ module.exports = {
             path.resolve(__dirname, '.serverless'),
             path.resolve(__dirname, '.webpack'),
             path.resolve(__dirname, '.esbuild'),
-          ],         
+          ],
         ],
       },
     ],
