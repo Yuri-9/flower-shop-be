@@ -27,7 +27,9 @@ In order to test the getProductsList function locally, run the following command
 
 ### create product in dynamoDB table (product, stock)
 
-POST https://m5lllv4o01.execute-api.eu-west-1.amazonaws.com/dev/create-product
+You can create request in postman:
+
+POST https://m5lllv4o01.execute-api.eu-west-1.amazonaws.com/dev/products
 
 with body:
 {
