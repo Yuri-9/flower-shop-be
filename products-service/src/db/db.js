@@ -4,10 +4,10 @@ const dynamo = new AWS.DynamoDB.DocumentClient();
 
 export const getScanParams = (TableName) => ({ TableName });
 
-export const getQueryParams = (TableName, id) => ({
+export const getQueryParams = (TableName, felidName, value) => ({
   TableName,
-  KeyConditionExpression: 'id = :id',
-  ExpressionAttributeValues: { ':id': id },
+  KeyConditionExpression: `${felidName} = :id`,
+  ExpressionAttributeValues: { ':id': value },
 });
 
 export const getPutParams = (TableName, Item) => ({ TableName, Item });
