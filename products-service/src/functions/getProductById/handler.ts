@@ -9,8 +9,6 @@ const { TABLE_NAME_PRODUCT, TABLE_NAME_STOCK } = process.env;
 
 export const getProductById: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (event) => {
   try {
-    console.log('event', event);
-
     if (!event.pathParameters || !event.pathParameters.productId) {
       return errorResponse({ statusCode: 400, message: 'Missing productId in the path' });
     }

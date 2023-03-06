@@ -8,12 +8,11 @@ const { TABLE_NAME_PRODUCT, TABLE_NAME_STOCK } = process.env;
 
 export const createProduct: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (event) => {
   try {
-    console.log('event', event);
     if (!event.body) {
       return errorResponse({ statusCode: 400, message: 'Missing body' });
     }
 
-    const { id, title, description, price, count } = (event.body as any) || {};
+    const { id, title, description, price, count } = event.body || {};
 
     if (
       typeof id !== 'string' ||

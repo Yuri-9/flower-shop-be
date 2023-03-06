@@ -9,9 +9,8 @@ import schema from './schema';
 
 const { TABLE_NAME_PRODUCT, TABLE_NAME_STOCK } = process.env;
 
-export const getProductsList: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (event) => {
+export const getProductsList: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async () => {
   try {
-    console.log('event', event);
     const products = await dataBase.scan(getScanParams(TABLE_NAME_PRODUCT));
     const productsStock = await dataBase.scan(getScanParams(TABLE_NAME_STOCK));
 

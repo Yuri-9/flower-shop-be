@@ -3,9 +3,7 @@ import type { AWS } from '@serverless/typescript';
 import * as dotenv from 'dotenv';
 dotenv.config({ path: __dirname + '/.env' });
 
-import getProductsList from '@functions/getProductsList';
-import getProductById from '@functions/getProductById';
-import createProduct from '@functions/createProduct';
+import { getProductsList, getProductById, createProduct } from '@functions/index';
 
 const serverlessConfiguration: AWS = {
   service: 'products-service',
@@ -28,6 +26,25 @@ const serverlessConfiguration: AWS = {
       TABLE_NAME_PRODUCT: process.env.TABLE_NAME_PRODUCT,
       TABLE_NAME_STOCK: process.env.TABLE_NAME_STOCK,
     },
+    iamRoleStatements: [
+      {
+        Effect: 'Allow',
+        Action: [
+          'dynamodb:Query',
+          'dynamodb:Scan',
+          'dynamodb:GetItem',
+          'dynamodb:PutItem',
+          'dynamodb:UpdateItem',
+          'dynamodb:DeleteItem',
+          'cloudwatch:*',
+          'logs:*',
+        ],
+        Resource: [
+          `arn:aws:dynamodb:eu-west-1:717882164865:table/${process.env.TABLE_NAME_PRODUCT}`,
+          `arn:aws:dynamodb:eu-west-1:717882164865:table/${process.env.TABLE_NAME_STOCK}`,
+        ],
+      },
+    ],
   },
   // import the function via paths
   functions: { getProductsList, getProductById, createProduct },
