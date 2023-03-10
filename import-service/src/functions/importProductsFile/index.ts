@@ -1,37 +1,37 @@
 import AWS from "aws-sdk";
-const BUCKET = "import-service-flower";
 import { middyfy } from "@libs/lambda";
+import { errorResponse, successResponse } from "@libs/api-gateway";
+import { BUCKET_NAME, FolderName, REGION } from "src/constants";
 
-const importProductsFileFunction = async function () {
-  const s3 = new AWS.S3({ region: "eu-west-1" });
-  let statusCode = 200;
-  let body = {};
-  let files = [];
-  const params = {
-    Bucket: BUCKET,
-    Prefix: "files/",
-  };
-
+const importProductsFileFunction = async (event) => {
   try {
-    const s3Response = await s3.listObjectsV2(params).promise();
-    files = s3Response.Contents;
-    body = JSON.stringify(
-      files
-        .filter((file) => file.Size)
-        .map((file) => `https://${BUCKET}.s3.amazonaws.com/${file.Key}`)
-    );
-  } catch (error) {
-    console.error("Error appears:");
-    console.error(error);
-    statusCode = 500;
-    body = error;
-  }
+    const fileName = event.queryStringParameters.fileName;
 
-  return {
-    statusCode,
-    body,
-    headers: { "Access-Control-Allow-Origin": "*" },
-  };
+    if (!fileName) {
+      return errorResponse({
+        statusCode: 403,
+        message: 'Missing query "fileName" in the path',
+      });
+    }
+
+    const s3 = new AWS.S3({ region: REGION });
+    const params = {
+      Bucket: BUCKET_NAME,
+      Key: `${FolderName.UPLOADED}/${fileName}`,
+      Expires: 60,
+      ContentType: "text/csv",
+    };
+
+    const url = s3.getSignedUrl("putObject", params);
+
+    if (!url) {
+      throw new Error("Error get url");
+    }
+
+    return successResponse({ url });
+  } catch (err) {
+    return errorResponse(err);
+  }
 };
 
 export const importProductsFile = middyfy(importProductsFileFunction);
