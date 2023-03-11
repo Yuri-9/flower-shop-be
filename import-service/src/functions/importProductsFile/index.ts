@@ -1,11 +1,11 @@
 import AWS from "aws-sdk";
 import { middyfy } from "@libs/lambda";
 import { errorResponse, successResponse } from "@libs/api-gateway";
-import { BUCKET_NAME, FolderName, REGION } from "src/constants";
+import { BUCKET_NAME, FolderName, REGION } from "@constants/index";
 
-const importProductsFileFunction = async (event) => {
+export const importProductsFileFunction = async (event) => {
   try {
-    const fileName = event.queryStringParameters.fileName;
+    const fileName = event.queryStringParameters?.fileName;
 
     if (!fileName) {
       return errorResponse({

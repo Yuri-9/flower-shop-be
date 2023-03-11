@@ -1,6 +1,6 @@
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import csvParser from "csv-parser";
-import { BUCKET_NAME, FolderName, REGION } from "src/constants";
+import { BUCKET_NAME, FolderName, REGION } from "@constants/index";
 import { asStream } from "src/types";
 import s3ObjectService from "src/services/s3ObjectService";
 import AWS from "aws-sdk";
