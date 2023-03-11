@@ -22,6 +22,7 @@ export const defaultHeaders = {
   "Access-Control-Allow-Methods": "*",
   "Access-Control-Allow-Headers": "*",
   "Access-Control-Allow-Origin": "*",
+  "Content-Type": "application/json",
 };
 
 export const successResponse = <T>(response: T) => {
