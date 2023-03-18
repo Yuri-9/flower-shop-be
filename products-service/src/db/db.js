@@ -22,7 +22,7 @@ const query = async (params) => {
   return queryResults;
 };
 
-const put = async (params) => {
+const put = (params) => {
   return dynamo.put(params).promise();
 };
 

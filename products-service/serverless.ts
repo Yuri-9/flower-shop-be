@@ -3,7 +3,7 @@ import type { AWS } from '@serverless/typescript';
 import * as dotenv from 'dotenv';
 dotenv.config({ path: __dirname + '/.env' });
 
-import { getProductsList, getProductById, createProduct } from '@functions/index';
+import { getProductsList, getProductById, createProduct, catalogBatchProcess } from '@functions/index';
 
 const serverlessConfiguration: AWS = {
   service: 'products-service',
@@ -13,7 +13,7 @@ const serverlessConfiguration: AWS = {
   useDotenv: true,
   provider: {
     name: 'aws',
-    runtime: 'nodejs14.x',
+    runtime: 'nodejs12.x',
     stage: 'dev',
     region: 'eu-west-1',
     apiGateway: {
@@ -25,6 +25,7 @@ const serverlessConfiguration: AWS = {
       NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
       TABLE_NAME_PRODUCT: process.env.TABLE_NAME_PRODUCT,
       TABLE_NAME_STOCK: process.env.TABLE_NAME_STOCK,
+      SQS_URL: { Ref: 'SQSQueue' },
     },
     iamRoleStatements: [
       {
@@ -47,7 +48,17 @@ const serverlessConfiguration: AWS = {
     ],
   },
   // import the function via paths
-  functions: { getProductsList, getProductById, createProduct },
+  functions: { getProductsList, getProductById, createProduct, catalogBatchProcess },
+  resources: {
+    Resources: {
+      SQSQueue: {
+        Type: 'AWS::SQS::Queue',
+        Properties: {
+          QueueName: 'catalogItemsQueue',
+        },
+      },
+    },
+  },
   package: { individually: true },
   custom: {
     // webpack: {
