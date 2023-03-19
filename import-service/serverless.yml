@@ -11,17 +11,27 @@ provider:
   runtime: nodejs12.x
   stage: dev
   region: eu-west-1
+  environment:
+    SQS_URL: ${env:SQS_URL}
 
-  iamRoleStatements:
-    - Effect: "Allow"
-      Action: "s3:ListBucket"
-      Resource:
-        - "arn:aws:s3:::import-service-flower"
-    - Effect: "Allow"
-      Action:
-        - "s3:*"
-      Resource:
-        - "arn:aws:s3:::import-service-flower/*"
+  iam:
+    role:
+      statements:
+        - Effect: 'Allow'
+          Action: 's3:ListBucket'
+          Resource:
+            - 'arn:aws:s3:::import-service-flower'
+        - Effect: 'Allow'
+          Action:
+            - 's3:*'
+          Resource:
+            - 'arn:aws:s3:::import-service-flower/*'
+        - Effect: 'Allow'
+          Action:
+            - 'sqs:*'
+          Resource:
+            - 'arn:aws:sqs:eu-west-1:717882164865:catalogItemsQueue'
+useDotenv: true
 
 functions:
   importProductsFile:
@@ -59,4 +69,4 @@ custom:
       - csv-parser
     concurrency: 10
     watch:
-      pattern: ["./index.ts", "src/**/*.ts", "./handler.ts"]
+      pattern: ['./index.ts', 'src/**/*.ts', './handler.ts']

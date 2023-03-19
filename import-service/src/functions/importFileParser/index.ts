@@ -1,35 +1,43 @@
-import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import csvParser from "csv-parser";
-import { BUCKET_NAME, FolderName, REGION } from "@constants/index";
-import { asStream } from "src/types";
-import s3ObjectService from "src/services/s3ObjectService";
-import AWS from "aws-sdk";
+import csvParser from 'csv-parser';
+import { BUCKET_NAME, FolderName, REGION } from '@constants/index';
+import s3ObjectService from 'src/services/s3ObjectService';
+import AWS from 'aws-sdk';
 
 export const importFileParser = async (event) => {
-  const client = new S3Client({ region: REGION });
   const s3 = new AWS.S3({ region: REGION });
+  const sqs = new AWS.SQS();
 
-  console.log(" -- event.Records", JSON.stringify(event.Records));
+  console.log(' -- event.Records', JSON.stringify(event.Records));
 
   try {
     for await (const record of event.Records) {
       const { name } = record.s3.bucket;
       const { key }: { key: string } = record.s3.object;
 
-      // Read file
-      const response = await client.send(
-        new GetObjectCommand({
-          Bucket: name,
-          Key: key,
-        })
-      );
+      const s3Object = s3.getObject({
+        Bucket: name,
+        Key: key,
+      });
 
-      // Parsing records
-      const stream = asStream(response).pipe(csvParser({}));
-
-      for await (const record of stream) {
-        console.log(" -- Product: ", record);
-      }
+      s3Object
+        .createReadStream()
+        .pipe(csvParser())
+        .on('data', (product) => {
+          console.log(' -- Product: ', JSON.stringify(product));
+          sqs.sendMessage(
+            {
+              QueueUrl: process.env.SQS_URL,
+              MessageBody: JSON.stringify(product),
+            },
+            (error, data) => {
+              if (error) {
+                console.log('error', error);
+              } else {
+                console.log('Send product to queue: ', data);
+              }
+            }
+          );
+        });
 
       await s3ObjectService.copyObject(s3, {
         bucketName: BUCKET_NAME,

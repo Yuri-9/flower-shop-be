@@ -3,7 +3,7 @@ import type { AWS } from '@serverless/typescript';
 import * as dotenv from 'dotenv';
 dotenv.config({ path: __dirname + '/.env' });
 
-import { getProductsList, getProductById, createProduct } from '@functions/index';
+import { getProductsList, getProductById, createProduct, catalogBatchProcess } from '@functions/index';
 
 const serverlessConfiguration: AWS = {
   service: 'products-service',
@@ -25,6 +25,8 @@ const serverlessConfiguration: AWS = {
       NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
       TABLE_NAME_PRODUCT: process.env.TABLE_NAME_PRODUCT,
       TABLE_NAME_STOCK: process.env.TABLE_NAME_STOCK,
+      SQS_URL: { Ref: 'SQSQueue' },
+      SNS_ARN: { Ref: 'SNSTopic' },
     },
     iamRoleStatements: [
       {
@@ -44,10 +46,53 @@ const serverlessConfiguration: AWS = {
           `arn:aws:dynamodb:eu-west-1:717882164865:table/${process.env.TABLE_NAME_STOCK}`,
         ],
       },
+      {
+        Effect: 'Allow',
+        Action: ['sns:*'],
+        Resource: { 'Fn::GetAtt': ['SQSQueue', 'Arn'] },
+      },
+      {
+        Effect: 'Allow',
+        Action: ['sns:*'],
+        Resource: { Ref: 'SNSTopic' },
+      },
     ],
   },
   // import the function via paths
-  functions: { getProductsList, getProductById, createProduct },
+  functions: { getProductsList, getProductById, createProduct, catalogBatchProcess },
+  resources: {
+    Resources: {
+      SQSQueue: {
+        Type: 'AWS::SQS::Queue',
+        Properties: {
+          QueueName: 'catalogItemsQueue',
+        },
+      },
+      SNSTopic: {
+        Type: 'AWS::SNS::Topic',
+        Properties: {
+          TopicName: 'createProductTopic',
+        },
+      },
+      SNSSubscription: {
+        Type: 'AWS::SNS::Subscription',
+        Properties: {
+          Endpoint: process.env.SNS_EMAIL_SUBSCRIPTION,
+          Protocol: 'email',
+          TopicArn: { Ref: 'SNSTopic' },
+        },
+      },
+      SNSSubscriptionNotEnoughProducts: {
+        Type: 'AWS::SNS::Subscription',
+        Properties: {
+          Protocol: 'email',
+          Endpoint: process.env.SNS_EMAIL_SUBSCRIPTION2,
+          TopicArn: { Ref: 'SNSTopic' },
+          FilterPolicy: { title: ['Rose'] },
+        },
+      },
+    },
+  },
   package: { individually: true },
   custom: {
     // webpack: {

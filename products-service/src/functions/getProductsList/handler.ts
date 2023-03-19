@@ -3,7 +3,7 @@ import { successResponse, errorResponse } from '@libs/api-gateway';
 import { middyfy } from '@libs/lambda';
 import { Product } from '@model/index';
 import { dataBase, getScanParams } from '@db/db';
-import { arrayToMapByField } from '@utils/arrayToMapByField.js';
+import { arrayToMapByField } from '@utils/arrayToMapByField';
 
 import schema from './schema';
 
