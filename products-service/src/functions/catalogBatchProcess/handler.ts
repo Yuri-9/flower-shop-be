@@ -7,9 +7,9 @@ export const catalogBatchProcess = async (event) => {
 
   console.log(' --event:', JSON.stringify(event));
   try {
-    const products = event.Records || [];
+    const records = event.Records || [];
 
-    const productsValid = products
+    const productsValid = records
       .map(({ body }) => JSON.parse(body))
       .filter((product) => ProductService.isValidProduct(product));
 
@@ -17,20 +17,21 @@ export const catalogBatchProcess = async (event) => {
       await ProductService.putProductToDB(product);
     }
 
-    sns.publish(
-      {
+    const hasRose = productsValid.some(({ title }) => title === 'Rose');
+
+    await sns
+      .publish({
         Subject: 'SNS reports that the products have been created successfully ',
         Message: JSON.stringify(productsValid),
+        MessageAttributes: {
+          title: {
+            DataType: 'String',
+            StringValue: hasRose ? 'Rose' : 'Lily',
+          },
+        },
         TopicArn: process.env.SNS_ARN,
-      },
-      (error, data) => {
-        if (error) {
-          console.log('SNS error', error);
-        } else {
-          console.log('SNS sent email: ', data);
-        }
-      }
-    );
+      })
+      .promise();
   } catch (err) {
     console.log('catalogBatchProcess: error', err);
   }

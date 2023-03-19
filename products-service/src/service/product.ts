@@ -28,10 +28,10 @@ class ProductService {
       console.log(`putProductToDB: start put item to DB ${TABLE_NAME_PRODUCT}, ${TABLE_NAME_STOCK}`);
 
       await dataBase.put(getPutParams(TABLE_NAME_PRODUCT, productItem));
-      console.log(`putProductToDB: item ${id} added successfully to DynamoDB table ${TABLE_NAME_PRODUCT}`);
+      console.log(`putProductToDB: item ${title} ${id} added successfully to DynamoDB table ${TABLE_NAME_PRODUCT}`);
 
       await dataBase.put(getPutParams(TABLE_NAME_STOCK, stockItem));
-      console.log(`putProductToDB: item ${id} added successfully to DynamoDB table ${TABLE_NAME_STOCK}`);
+      console.log(`putProductToDB: item ${title} ${id} added successfully to DynamoDB table ${TABLE_NAME_STOCK}`);
     } catch (err) {
       console.log('putProductToDB:', err);
       throw new Error(err);

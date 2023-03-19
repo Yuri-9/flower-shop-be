@@ -3,7 +3,6 @@ export type Product = {
   title: string;
   price: number;
   description: string;
-  description2: string;
 };
 
 export interface ProductPostBody {

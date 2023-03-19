@@ -1,6 +1,8 @@
+import { REGION } from '@constants/index';
+
 const AWS = require('aws-sdk');
 
-const dynamo = new AWS.DynamoDB.DocumentClient();
+const dynamo = new AWS.DynamoDB.DocumentClient({ region: REGION });
 
 export const getScanParams = (TableName) => ({ TableName });
 
