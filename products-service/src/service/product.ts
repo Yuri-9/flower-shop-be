@@ -33,7 +33,7 @@ class ProductService {
       await dataBase.put(getPutParams(TABLE_NAME_STOCK, stockItem));
       console.log(`putProductToDB: item ${id} added successfully to DynamoDB table ${TABLE_NAME_STOCK}`);
     } catch (err) {
-      console.log('putProductToDB: error', err);
+      console.log('putProductToDB:', err);
       throw new Error(err);
     }
   }

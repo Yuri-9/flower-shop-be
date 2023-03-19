@@ -13,7 +13,7 @@ const serverlessConfiguration: AWS = {
   useDotenv: true,
   provider: {
     name: 'aws',
-    runtime: 'nodejs12.x',
+    runtime: 'nodejs14.x',
     stage: 'dev',
     region: 'eu-west-1',
     apiGateway: {
@@ -26,6 +26,7 @@ const serverlessConfiguration: AWS = {
       TABLE_NAME_PRODUCT: process.env.TABLE_NAME_PRODUCT,
       TABLE_NAME_STOCK: process.env.TABLE_NAME_STOCK,
       SQS_URL: { Ref: 'SQSQueue' },
+      SNS_ARN: { Ref: 'SNSTopic' },
     },
     iamRoleStatements: [
       {
@@ -45,6 +46,16 @@ const serverlessConfiguration: AWS = {
           `arn:aws:dynamodb:eu-west-1:717882164865:table/${process.env.TABLE_NAME_STOCK}`,
         ],
       },
+      {
+        Effect: 'Allow',
+        Action: ['sns:*'],
+        Resource: { 'Fn::GetAtt': ['SQSQueue', 'Arn'] },
+      },
+      {
+        Effect: 'Allow',
+        Action: ['sns:*'],
+        Resource: { Ref: 'SNSTopic' },
+      },
     ],
   },
   // import the function via paths
@@ -55,6 +66,20 @@ const serverlessConfiguration: AWS = {
         Type: 'AWS::SQS::Queue',
         Properties: {
           QueueName: 'catalogItemsQueue',
+        },
+      },
+      SNSTopic: {
+        Type: 'AWS::SNS::Topic',
+        Properties: {
+          TopicName: 'createProductTopic',
+        },
+      },
+      SNSSubscription: {
+        Type: 'AWS::SNS::Subscription',
+        Properties: {
+          Endpoint: process.env.SNS_EMAIL_SUBSCRIPTION,
+          Protocol: 'email',
+          TopicArn: { Ref: 'SNSTopic' },
         },
       },
     },
